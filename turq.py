@@ -713,12 +713,19 @@ class TurqHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 
 def main():
-    parser = OptionParser(usage='usage: %prog [-p PORT]')
+    parser = OptionParser(usage='usage: %prog [-p PORT] [-r FILE]')
     parser.add_option('-p', '--port', dest='port', type='int',
                       default=DEFAULT_PORT,
                       help='listen on PORT', metavar='PORT')
+    parser.add_option('-r', '--rules', dest='rules', type='str',
+                      help='read rules from file', metavar='FILE')
     options, args = parser.parse_args()
     
+    if options.rules:
+        with open(options.rules, 'r') as f:
+            code = f.read()
+            TurqHandler.install_code(code)
+
     server = BaseHTTPServer.HTTPServer(('0.0.0.0', options.port), TurqHandler)
     sys.stderr.write('Listening on port %d\n' % server.server_port)
     sys.stderr.write('Try http://%s:%d/+turq/\n' %
