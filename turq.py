@@ -10,6 +10,7 @@ import email.message
 import gzip
 import httplib
 import json
+import msgpack
 from optparse import OptionParser
 import os.path
 import random
@@ -299,6 +300,16 @@ class Rule(object):
         """Set up an ``application/javascript`` response."""
         return self.ctype('application/javascript').body(code)
     
+    @Cheat.entry('[data]')
+    def msgpack(self, data={'result': 'turq'}):
+        """Set up a msgpack
+        `data` will be serialized into an ``application/x-msgpack`` entity body.
+        """
+        self.ctype('application/x-msgpack')
+        self.body(lambda req: (msgpack.packb(req.p(data))))
+        #self.body(lambda req: (json.dumps(req.p(data))))
+        return self
+
     @Cheat.entry('[code]')
     def xml(self, code='<turq></turq>'):
         """Set up an ``application/xml`` response."""
